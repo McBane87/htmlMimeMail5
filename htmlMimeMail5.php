@@ -779,7 +779,7 @@ class htmlMimeMail5
             case 'smtp':
                 require_once(dirname(__FILE__) . '/smtp.php');
                 require_once(dirname(__FILE__) . '/RFC822.php');
-                $smtp = new smtp;
+                $smtp = new smtp ($this->smtp_params);
                 $Mail_RFC822 = new Mail_RFC822;
 
                 $smtp->connect($this->smtp_params);
