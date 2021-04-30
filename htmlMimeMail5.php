@@ -17,7 +17,7 @@ set_time_limit(240);
 * along with htmlMimeMail5; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
-* © Copyright 2005 Richard Heyes
+* Â© Copyright 2005 Richard Heyes
 */
 
 /*
