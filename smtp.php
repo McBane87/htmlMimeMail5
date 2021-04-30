@@ -37,6 +37,9 @@ class smtp
     private $body;
     private $from;
     private $host;
+    private $starttls;
+    private $selfsigned;
+    private $sslverify;
     private $port;
     private $helo;
     private $auth;
@@ -49,6 +52,9 @@ class smtp
     *
     *   host    - The hostname of the smtp server		Default: localhost
     *   port    - The port the smtp server runs on		Default: 25
+    *   starttls   - Wether to use STARTTLS for conn		Default: FALSE
+    *   selfsigned - Wether to allow selfsigned certs		Default: FALSE
+    *   sslverify  - Wether to verify ssl peer			Default: TRUE
     *   helo    - What to send as the HELO command		Default: localhost
     *             (typically the hostname of the
     *             machine this script runs on)
@@ -69,6 +75,9 @@ class smtp
         $this->status        = SMTP_STATUS_NOT_CONNECTED;
         $this->host          = 'localhost';
         $this->port          = 25;
+        $this->starttls      = FALSE;
+        $this->selfsigned    = FALSE;
+        $this->sslverify     = TRUE;
         $this->helo          = 'localhost';
         $this->auth          = FALSE;
         $this->user          = '';
@@ -107,7 +116,16 @@ class smtp
             $greeting = $this->get_data();
             if (is_resource($this->connection)) {
                 $this->status = SMTP_STATUS_CONNECTED;
+                $hello = $this->auth ? $this->ehlo() : $this->helo();
+                if ($hello && $this->starttls) {
+                    if ($this->startTLS()) {
                 return $this->auth ? $this->ehlo() : $this->helo();
+            } else {
+			return false;
+		    }		    
+                } else {
+                    return $hello;
+                }			
             } else {
                 $this->errors[] = 'Failed to connect to server: '.$errstr;
                 return FALSE;
@@ -205,6 +223,49 @@ class smtp
 
         } else {
             $this->errors[] = 'EHLO command failed, output: ' . trim(substr(trim($error),3));
+            return false;
+        }
+    }
+    
+    /**
+    * Function to implement STARTTLS cmd
+    */
+    private function startTLS()
+    {
+        if(is_resource($this->connection)
+                AND $this->send_data('STARTTLS')
+                AND substr(trim($error = $this->get_data()), 0, 3) === '220' ){
+
+	    $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+	    if (defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT')) {
+	        $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
+	    }
+	    if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+	        $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+	    }
+	    if (defined('STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT')) {
+	        $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+	    }
+	    
+	    stream_context_set_option($this->connection, 
+		array('ssl' => array(
+			'verify_peer' => $this->sslverify,
+			'verify_peer_name' => $this->sslverify,
+			'allow_self_signed' => $this->selfsigned
+		))
+	    );
+	    
+	    $ssl_ok = stream_socket_enable_crypto($this->connection, true, $crypto_method);
+	    
+	    if ($ssl_ok !== FALSE) {
+		return TRUE;
+	    } else {
+		$this->errors[] = 'Unable to start TLS encryption.';
+		return FALSE;
+	    }
+
+        } else {
+            $this->errors[] = 'STARTTLS command failed, output: ' . trim(substr(trim($error),3));
             return false;
         }
     }

@@ -20,6 +20,11 @@ set_time_limit(240);
 * © Copyright 2005 Richard Heyes
 */
 
+/*
+* 2018:		Compability changes for PHP7
+* 2021-04-30:	Added Support for startTLS
+*/
+
 require_once(dirname(__FILE__) . '/mimePart.php');
 
 class htmlMimeMail5
@@ -191,8 +196,11 @@ class htmlMimeMail5
     * @param bool   $auth User authentication or not
     * @param string $user Username
     * @param string $pass Password
+    * @param bool   $starttls   Use startTLS
+    * @param bool   $sslverify  Verify peer
+    * @param bool   $selfsigned Allow selfsigned certs
     */
-    public function setSMTPParams($host = null, $port = null, $helo = null, $auth = null, $user = null, $pass = null)
+    public function setSMTPParams($host = null, $port = null, $helo = null, $auth = null, $user = null, $pass = null, $starttls = null, $sslverify = null, $selfsigned = null)
     {
         if (!is_null($host)) $this->smtp_params['host'] = $host;
         if (!is_null($port)) $this->smtp_params['port'] = $port;
@@ -200,6 +208,9 @@ class htmlMimeMail5
         if (!is_null($auth)) $this->smtp_params['auth'] = $auth;
         if (!is_null($user)) $this->smtp_params['user'] = $user;
         if (!is_null($pass)) $this->smtp_params['pass'] = $pass;
+        if (!is_null($starttls)) $this->smtp_params['starttls'] = $starttls;
+        if (!is_null($sslverify)) $this->smtp_params['sslverify'] = $sslverify;
+        if (!is_null($selfsigned)) $this->smtp_params['selfsigned'] = $selfsigned;
     }
 
     /**

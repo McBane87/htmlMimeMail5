@@ -567,6 +567,7 @@ class Mail_RFC822
 
         // Catch any RFC822 comments and store them separately
         $_mailbox = $mailbox;
+        $comments = array();
         while (strlen(trim($_mailbox)) > 0) {
             $parts = explode('(', $_mailbox);
             $before_comment = $this->_splitCheck($parts, '(');
