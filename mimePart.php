@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU General Public License
 * along with htmlMimeMail5; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-* 
+*
 * © Copyright 2005 Richard Heyes
 */
 
@@ -241,7 +241,7 @@ class Mail_MIMEPart
     public function addSubPart($body, $params)
     {
         $this->subparts[] = new Mail_MIMEPart($body, $params);
-        
+
         return $this->subparts[count($this->subparts) - 1];
     }
 
@@ -287,7 +287,7 @@ class Mail_MIMEPart
         $escape = '=';
         $output = '';
 
-        while(list(, $line) = each($lines)){
+        foreach ($lines as $line) {
 
             $linlen     = strlen($line);
             $newline = '';

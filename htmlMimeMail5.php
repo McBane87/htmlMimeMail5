@@ -103,6 +103,11 @@ class htmlMimeMail5
     private $sendmail_path;
 
     /**
+     * Variable for holding errors
+     */
+    public $errors;
+
+    /**
     * Constructor function.
     */
     public function __construct()
@@ -179,11 +184,11 @@ class htmlMimeMail5
     public function setCRLF($crlf = "\n")
     {
         if (!defined('CRLF')) {
-            define('CRLF', $crlf, true);
+            define('CRLF', $crlf);
         }
 
         if (!defined('MAIL_MIMEPART_CRLF')) {
-            define('MAIL_MIMEPART_CRLF', $crlf, true);
+            define('MAIL_MIMEPART_CRLF', $crlf);
         }
     }
 
@@ -1044,7 +1049,7 @@ class QPrintEncoding implements iEncoding
     *
     * @param string $input Data to encode
     */
-    public function encode($input)
+    public function encode($input, $lineMax = 76)
     {
         // Replace non printables
         $input    = preg_replace('/([^\x20\x21-\x3C\x3E-\x7E\x0A\x0D])/e', 'sprintf("=%02X", ord("\1"))', $input);

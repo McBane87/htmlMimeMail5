@@ -22,8 +22,8 @@ set_time_limit(240);
 * © Copyright 2005 Richard Heyes
 */
 
-define('SMTP_STATUS_NOT_CONNECTED', 1, true);
-define('SMTP_STATUS_CONNECTED', 2, true);
+define('SMTP_STATUS_NOT_CONNECTED', 1);
+define('SMTP_STATUS_CONNECTED', 2);
 
 class smtp
 {
@@ -122,10 +122,10 @@ class smtp
                 return $this->auth ? $this->ehlo() : $this->helo();
             } else {
 			return false;
-		    }		    
+		    }
                 } else {
                     return $hello;
-                }			
+                }
             } else {
                 $this->errors[] = 'Failed to connect to server: '.$errstr;
                 return FALSE;
@@ -226,7 +226,7 @@ class smtp
             return false;
         }
     }
-    
+
     /**
     * Function to implement STARTTLS cmd
     */
@@ -246,17 +246,17 @@ class smtp
 	    if (defined('STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT')) {
 	        $crypto_method |= STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
 	    }
-	    
-	    stream_context_set_option($this->connection, 
+
+	    stream_context_set_option($this->connection,
 		array('ssl' => array(
 			'verify_peer' => $this->sslverify,
 			'verify_peer_name' => $this->sslverify,
 			'allow_self_signed' => $this->selfsigned
 		))
 	    );
-	    
+
 	    $ssl_ok = stream_socket_enable_crypto($this->connection, true, $crypto_method);
-	    
+
 	    if ($ssl_ok !== FALSE) {
 		return TRUE;
 	    } else {
